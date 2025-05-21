@@ -1,12 +1,37 @@
 import { useState, useRef } from "react";
 
+const InvalidSimbol = ["#", "$", "%", "&", "/", "(", ")", "{", "}", "[", "]", "|", "\\", ";", ":", "'", '"', "<", ">", "?"];
+
 export default function AddTask() {
   const [title, setTitle] = useState("");
+  const [error, setError] = useState("");
   const descriptionRef = useRef();
   const statusRef = useRef();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (title.trim() === "") {
+      setError("Il titolo non può essere vuoto");
+      return;
+    }
+
+    if (InvalidSimbol.some((symbol) => title.includes(symbol))) {
+      setError("Il titolo non può contenere simboli speciali");
+      return;
+    }
+
+    if (descriptionRef.current.value.trim() === "") {
+      setError("La descrizione non può essere vuota");
+      return;
+    }
+
+    if (InvalidSimbol.some((symbol) => descriptionRef.current.value.includes(symbol))) {
+      setError("La descrizione non può contenere simboli speciali");
+      return;
+    }
+
+    setError("");
 
     const newTask = {
       title,
@@ -33,8 +58,8 @@ export default function AddTask() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Inserisci il nome del task"
-            required
           />
+          {error && <div className="text-danger mt-2">{error}</div>}
         </div>
 
         <div className="mb-3">
@@ -43,8 +68,8 @@ export default function AddTask() {
             className="form-control"
             ref={descriptionRef}
             placeholder="Descrizione del task"
-            required
           ></textarea>
+          {error && <div className="text-danger mt-2">{error}</div>}
         </div>
 
         <div className="mb-3">

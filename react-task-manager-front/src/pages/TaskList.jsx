@@ -3,6 +3,7 @@ import TaskRow from '../components/TaskRow';
 
 export default function TaskList() {
   const { tasks } = useGlobalContext();
+  
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Lista dei Task</h1>
@@ -23,3 +24,4 @@ export default function TaskList() {
     </div>
   );
 }
+

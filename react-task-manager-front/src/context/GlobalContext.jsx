@@ -5,7 +5,7 @@ const GlobalContext = createContext();
 
 export const GlobalContextProvider = ({ children }) => {
   const taskManager = useTasks();
-
+  
   return (
     <GlobalContext.Provider value={taskManager}>
       {children}

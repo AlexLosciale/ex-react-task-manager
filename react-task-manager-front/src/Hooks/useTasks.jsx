@@ -20,8 +20,37 @@ export default function useTasks() {
         .catch((err) => console.error('Errore nel recupero dei task:', err));
     }, []);
 
-    const addTask = (task) => {
-        //
+    const addTask = async (task) => {
+        const newTask = {
+          id: Date.now(),
+          title: task.title,
+          description: task.description,
+          completed: false,
+          status: task.status,
+        };
+      
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/tasks`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newTask),
+          });
+      
+          const data = await res.json();
+      
+          if (!data.success) {
+            throw new Error(data.message);
+          }
+      
+          setTasks((prevTasks) => [...prevTasks, data.task]);
+      
+          return data;
+        } catch (error) {
+          console.error("Errore nel salvataggio del task:", error.message);
+          throw error;
+        }
     };
 
     const updateTask = (updatedTask) => {

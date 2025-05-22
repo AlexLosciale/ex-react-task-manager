@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
-
-const InvalidSimbol = ["#", "$", "%", "&", "/", "(", ")", "{", "}", "[", "]", "|", "\\", ";", ":", "'", '"', "<", ">", "?"];
+import {useGlobalContext} from "../context/GlobalContext";
 
 export default function AddTask() {
   const [title, setTitle] = useState("");
@@ -8,7 +7,9 @@ export default function AddTask() {
   const descriptionRef = useRef();
   const statusRef = useRef();
 
-  const handleSubmit = (e) => {
+  const {addTask} = useGlobalContext();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (title.trim() === "") {
@@ -16,8 +17,8 @@ export default function AddTask() {
       return;
     }
 
-    if (InvalidSimbol.some((symbol) => title.includes(symbol))) {
-      setError("Il titolo non può contenere simboli speciali");
+    if (!/^[a-zA-Z\sàèéìòùÀÈÉÌÒÙ]+$/.test(title)) {
+      setError("Il titolo può contenere solo lettere, spazi e lettere accentate");
       return;
     }
 
@@ -26,7 +27,7 @@ export default function AddTask() {
       return;
     }
 
-    if (InvalidSimbol.some((symbol) => descriptionRef.current.value.includes(symbol))) {
+    if (!/^[a-zA-Z\sàèéìòùÀÈÉÌÒÙ]+$/.test(descriptionRef.current.value)) {
       setError("La descrizione non può contenere simboli speciali");
       return;
     }
@@ -39,11 +40,18 @@ export default function AddTask() {
       status: statusRef.current.value,
     };
 
-    console.log("Task aggiunto:", newTask);
-
-    setTitle("");
-    descriptionRef.current.value = "";
-    statusRef.current.value = "To do";
+    try {
+      const data = await addTask(newTask); 
+      alert("Task salvato con successo");
+  
+      setTitle("");
+      descriptionRef.current.value = "";
+      statusRef.current.value = "To do";
+  
+    } catch (error) {
+      console.error("Errore nel salvataggio del task:", error.message);
+      setError("Errore nel salvataggio del task");
+    }
   };
 
   return (

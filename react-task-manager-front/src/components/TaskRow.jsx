@@ -1,4 +1,5 @@
-import React, { memo } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 
 function TaskRow({ task }) {
     const getStatusBadge = () => {
@@ -14,7 +15,11 @@ function TaskRow({ task }) {
       }; 
     return (
     <tr>
-        <td>{task.title}</td>
+        <td>
+            <Link to={`/tasks/${task.id}`} className="link-primary text-decoration-none fw-bold">
+                {task.title}
+            </Link>
+        </td>
         <td>{task.description}</td>
         <td>{getStatusBadge()}</td>
     </tr>

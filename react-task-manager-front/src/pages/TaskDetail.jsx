@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useGlobalContext } from '../context/GlobalContext';
 
 function TaskDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [task, setTask] = useState(null);
-  const { tasks } = useGlobalContext();
+  const { tasks, deleteTask } = useGlobalContext(); // ✅ usa solo il context
 
   useEffect(() => {
     const taskId = Number(id);
@@ -17,21 +18,11 @@ function TaskDetail() {
     }
   }, [id, tasks]);
 
-const getStatusBadge = () => {
+  const getStatusBadge = () => {
     if (!task) return null;
-    if (task.status === 'Done') {
-        return <span className="badge bg-success">Completato</span>;
-    }
-    if (task.status === 'To do') {
-        return <span className="badge bg-warning">In Corso</span>;
-    }
-    if (task.status === 'Doing') {
-        return <span className="badge bg-danger">Non Iniziato</span>;
-    }
-};
-
-  const handleDelete = () => {
-    console.log('Elimina task con ID:', id);
+    if (task.status === 'Done') return <span className="badge bg-success">Completato</span>;
+    if (task.status === 'To do') return <span className="badge bg-warning">In Corso</span>;
+    if (task.status === 'Doing') return <span className="badge bg-danger">Non Iniziato</span>;
   };
 
   if (!task) {
@@ -54,7 +45,13 @@ const getStatusBadge = () => {
           <p className="card-text">
             Creato il: {new Date(task.createdAt).toLocaleDateString('it-IT')}
           </p>
-          <button className="btn btn-danger" onClick={handleDelete}>
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              deleteTask(task.id);
+              navigate('/');
+            }}
+          >
             Elimina Task
           </button>
         </div>

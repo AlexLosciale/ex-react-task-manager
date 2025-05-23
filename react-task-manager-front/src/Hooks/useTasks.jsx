@@ -58,7 +58,18 @@ export default function useTasks() {
     };
 
     const deleteTask = (taskId) => {
-        //
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+        fetch(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`, {
+            method: "DELETE",
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            if (!data.success) {
+                throw new Error(data.message);
+            }
+            console.log("Task eliminato con successo:", data);
+        })
+        .catch((err) => console.error('Errore nell\'eliminazione del task:', err));
     };
 
     return { tasks, addTask, updateTask, deleteTask };

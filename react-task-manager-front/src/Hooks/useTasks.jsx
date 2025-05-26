@@ -54,7 +54,26 @@ export default function useTasks() {
     };
 
     const updateTask = (updatedTask) => {
-        //
+        setTasks((prevTasks) => 
+            prevTasks.map((task) => 
+                task.id === updatedTask.id ? { ...task, ...updatedTask } : task
+            )
+        );
+
+        fetch(`${import.meta.env.VITE_API_URL}/tasks/${updatedTask.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedTask),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("Task aggiornato con successo:", data);
+        })
+        .catch((err) => {
+            console.error('Errore nell\'aggiornamento del task:', err);
+        });
     };
 
     const deleteTask = (taskId) => {

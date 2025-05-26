@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGlobalContext } from '../context/GlobalContext';
 import Modal from '../components/Modal';
+import ModalModify from '../components/ModalModify';
 
 function TaskDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const { tasks, deleteTask } = useGlobalContext();
+  const [showModalModify, setShowModalModify] = useState(false);
+  const { tasks, deleteTask, updateTask } = useGlobalContext();
 
   useEffect(() => {
     const taskId = Number(id);
@@ -23,8 +25,8 @@ function TaskDetail() {
   const getStatusBadge = () => {
     if (!task) return null;
     if (task.status === 'Done') return <span className="badge bg-success">Completato</span>;
-    if (task.status === 'To do') return <span className="badge bg-warning">In Corso</span>;
-    if (task.status === 'Doing') return <span className="badge bg-danger">Non Iniziato</span>;
+    if (task.status === 'To do') return <span className="badge bg-warning">Da fare</span>;
+    if (task.status === 'Doing') return <span className="badge bg-danger">In corso</span>;
   };
 
   const handleDeleteClick = () => {
@@ -39,6 +41,17 @@ function TaskDetail() {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setShowModalModify(false);
+  };
+
+  const handleModifyClick = () => {
+    setShowModalModify(true);
+  };
+
+  const handleSaveTask = (updatedTask) => {
+    updateTask(updatedTask);
+    setTask(updatedTask);
+    setShowModalModify(false);
   };
 
   if (!task) {
@@ -52,7 +65,7 @@ function TaskDetail() {
 
   return (
     <div className="container">
-      <h1>Dettagli del Task</h1>
+      <h1 className="mb-4">Dettagli del Task</h1>
       <div className="card mb-3 shadow border rounded bg-light text-dark" style={{ maxWidth: '50%' }}>
         <div className="card-body">
           <h5 className="card-title">{task.title}</h5>
@@ -63,6 +76,9 @@ function TaskDetail() {
           </p>
           <button className="btn btn-danger" onClick={handleDeleteClick}>
             Elimina Task
+          </button>
+          <button className="btn btn-primary ms-2" onClick={handleModifyClick}>
+            Modifica Task
           </button>
         </div>
       </div>
@@ -75,6 +91,15 @@ function TaskDetail() {
           onClose={handleCloseModal}
           onConfirm={handleConfirmDelete}
           confirmText="Sì, elimina"
+        />
+      )}
+
+      {showModalModify && (
+        <ModalModify
+          show={showModalModify}
+          onClose={handleCloseModal}
+          onConfirm={handleSaveTask}
+          task={task}
         />
       )}
     </div>
